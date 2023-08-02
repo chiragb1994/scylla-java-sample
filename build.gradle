@@ -1,0 +1,66 @@
+plugins {
+    id 'java'
+    // scylla driver has micrometer version 1.6.5. We need spring with same micrometer version
+    id 'org.springframework.boot' version '2.4.4'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'com.diffplug.spotless' version '6.0.4'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://packages.confluent.io/maven/'
+    }
+}
+
+
+group 'com.chirag.scylla'
+version '1.0-SNAPSHOT'
+
+
+ext {
+    lombokVersion = '1.18.24'
+    // scylla driver 4.14.1.0 has micrometer version 1.6.5. Need to make sure it is same in spring.
+    scyllaDriverVersion = '4.14.1.0'
+}
+
+dependencies {
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
+
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    implementation "com.scylladb:java-driver-core:$scyllaDriverVersion"
+//    implementation "com.scylladb:java-driver-query-builder:$scyllaDriverVersion"
+    implementation "com.scylladb:java-driver-mapper-runtime:$scyllaDriverVersion"
+    annotationProcessor "com.scylladb:java-driver-mapper-processor:$scyllaDriverVersion"
+    implementation "com.scylladb:java-driver-metrics-micrometer:$scyllaDriverVersion"
+    implementation 'com.datastax.oss:native-protocol:1.5.1'
+
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'commons-io:commons-io:2.11.0'
+
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+    }
+}
+
+processResources.finalizedBy('spotlessApply')
